@@ -78,9 +78,7 @@ def imgPsnr(plain, cipher):
 # print(ps3)
 # f = generate_fernet()
 # publicKey, privateKey = generate_rsa()
-
 # d = 'iyaaaaa udahhh'
-
 # en_d = encData(d, f, publicKey)
 # de_d = decData(en_d, privateKey)
 
