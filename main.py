@@ -69,6 +69,9 @@ class Main(QWidget):
         self.mse_label.setFixedWidth(300)
         self.ava_label = QLabel('AVA')
         self.psnr_label = QLabel('PSNR')
+        self.uaci_label = QLabel('UACI')
+        self.npcr_label = QLabel('NPCR')
+
 
         self.hidden_msg = QLabel('Hidden Message')
         self.hidden_msg.setFont(QFont('Arial', 8, weight=QFont.Bold))
@@ -166,6 +169,8 @@ class Main(QWidget):
         layout_img_cpr.addWidget(self.mse_label)
         layout_img_cpr.addWidget(self.psnr_label)
         layout_img_cpr.addWidget(self.ava_label)
+        layout_img_cpr.addWidget(self.uaci_label)
+        layout_img_cpr.addWidget(self.npcr_label)
 
         
         layout_cipher_msg.addWidget(self.space)
@@ -205,10 +210,15 @@ class Main(QWidget):
 
         ms, ps = self.get_mse()
         av = self.get_ava()
+        uaci = self.get_uaci()
+        npcr = self.get_npcr()
+
         # err = str(ms, av)
         self.mse_label.setText(str(ms))
         self.psnr_label.setText(str(ps))
         self.ava_label.setText(str(av))
+        self.uaci_label.setText(str(uaci))
+        self.npcr_label.setText(str(npcr))
         self.cipher_img.setPixmap(QPixmap(pixmap))
 
     def dec(self):
@@ -217,7 +227,7 @@ class Main(QWidget):
         self.plain_text2.setText(self.message)
 
     def get_img(self):
-        fname = QFileDialog.getOpenFileName(self, 'Open File', 'D:\\UDINUS\Cryptography\project', 'Image files (*.png)')
+        fname = QFileDialog.getOpenFileName(self, 'Open File', 'D:\\UDINUS\Cryptography\crypto-project', 'Image files (*.png)')
         self.img_path = fname[0]
 
         pixmap = QPixmap(self.img_path)
@@ -237,9 +247,27 @@ class Main(QWidget):
         return str(errormse), str(errorpsnr)
     
     def get_ava(self):
-        errorava = core.txtError(self.cipherData)
+        errorava = core.txtError(self.plain_text.toPlainText(), self.f, self.publicKey)
         errorava = 'AVA : ', errorava
         return str(errorava)
+    
+    def get_uaci(self):
+        plain = cv2.imread(self.img_path, 0)
+        cipher = cv2.imread('temp_img.png', 0)
+
+        erroruaci = core.uaci1(plain, cipher)
+        erroruaci = 'UACI : ', erroruaci
+
+        return str(erroruaci)
+    
+    def get_npcr(self):
+        plain = cv2.imread(self.img_path, 0)
+        cipher = cv2.imread('temp_img.png', 0)
+
+        errornpcr = core.npcr1(plain, cipher)
+        errornpcr = 'NPCR : ', errornpcr
+
+        return str(errornpcr)
     
     def show_histogram_ori(self):
         self.w = HistogramOri(self.img_path)
