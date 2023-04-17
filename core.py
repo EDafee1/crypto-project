@@ -8,6 +8,10 @@ from cryptography.fernet import Fernet
 from base64 import b64encode, b64decode
 from PIL import Image
 
+def percent_f(f):
+    f = float(f)/100
+    return '{:.2%}'.format(f)
+
 def generate_rsa():
     publicKey, privateKey = rsa.newkeys(2048)
     return publicKey, privateKey
@@ -67,54 +71,18 @@ def imgPsnr(plain, cipher):
     psnr = 20 * math.log10(max_pixel) - 10 * math.log10(errmse)
     return psnr
 
-def imgUaci(plain, cipher):
-    img1 = plain
-    img2 = cipher
-
-    width, height = img1.shape
-    value = 0
-
-    print(height)
-    print(width)
-
-    for y in range(height):
-        for x in range(width):
-            value += (abs(int(img1[x,y])-int(img2[x,y]))/255)
-
-    value = value*100/(width*height*100)
-    return value
-
-def uaci1(img1, img2):
+def imgUaci(img1, img2):
     diff = np.abs(img1 - img2)
-    
-    # Calculate the UACI (Universal Image Quality Index) value
-    uaci = np.sum(diff) / (255 * img1.shape[0] * img2.shape[1])
+    diff = np.sum(diff)
+
+    total = (255 * img1.shape[0] * img2.shape[1])
+
+    print(diff)
+    print(total)
+
+    uaci =  diff / total
     
     return uaci * 100
-
-def npcr1(img1, img2):
-    # Convert the images to numpy arrays
-    original_arr = np.array(img1)
-    stego_arr = np.array(img2)
-
-    # Calculate the MSE between the images
-    mse = np.mean((original_arr - stego_arr) ** 2)
-
-    # Calculate the NPCR score
-    npcr = 1 - mse / (255.0 ** 2)
-
-    return npcr * 100
-
-def rateofchange(height,width,pixel1,pixel2,matrix,i):
-
-    for y in range(0,height):
-        for x in range(0,width):
-            #print(x,y)
-            if pixel1[x,y][i] == pixel2[x,y][i]:
-                matrix[x,y] = 0
-            else:
-                matrix[x,y] = 1
-    return matrix
 
 def sumofpixel(height,width,img1,img2):
     matrix = np.empty([width, height])
@@ -131,20 +99,19 @@ def sumofpixel(height,width,img1,img2):
             psum = matrix[x,y]+psum
     return psum
 
-def npcrr(img1, img2):
-    # Convert the images to numpy arrays
+def npcr(img1, img2):
+
     original_arr = np.array(img1)
     stego_arr = np.array(img2)
 
-    print('arr', original_arr)
-    # Calculate the number of pixels that have changed
-    num_changed_pixels = np.sum(original_arr != stego_arr)
-    print('num pix', num_changed_pixels)
-    # Calculate the total number of pixels
-    total_pixels = original_arr.shape[0] * original_arr.shape[1]
-    print('tot pix', total_pixels)
+    num_changed_pixels = 0
+    for x in range(original_arr.shape[0]):
+        for y in range(original_arr.shape[1]):
+            if (original_arr[x][y] == stego_arr[x][y]).all():
+                num_changed_pixels += 1
 
-    # Calculate the NPCR score
+    total_pixels = original_arr.shape[0] * original_arr.shape[1]
+
     npcr = (num_changed_pixels / total_pixels) * 100
 
     return npcr

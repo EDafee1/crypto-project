@@ -1,4 +1,4 @@
-import matplotlib.pyplot as plt #importing matplotlib
+import matplotlib.pyplot as plt
 import cv2
 
 img = cv2.imread('temp_img.png', 0)

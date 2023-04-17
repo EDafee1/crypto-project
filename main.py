@@ -189,6 +189,29 @@ class Main(QWidget):
         layout.addLayout(layout_cipher)
         # self.chart = Canvas(self, 'wand_ori.png')
 
+        #coloring
+        self.setStyleSheet("background-color: #EFFFFB;")
+
+        self.btn_fernet.setStyleSheet("background-color: #50D890; color:white;")
+        self.btn_rsa.setStyleSheet("background-color: #50D890; color:white;")
+        self.btn_img.setStyleSheet("background-color: #50D890; color:white;")
+        self.btn_enc.setStyleSheet("background-color: #50D890; color:white;")
+        self.btn_dec.setStyleSheet("background-color: #50D890; color:white;")
+        self.btn_hist_cpr.setStyleSheet("background-color: #4F98CA; color:#272727;")
+        self.btn_hist_ori.setStyleSheet("background-color: #4F98CA; color:#272727;")
+
+        self.lbl_fernet.setStyleSheet('color: #272727;')
+        self.lbl_rsa.setStyleSheet('color: #272727;')
+        self.lbl_rsa_prv.setStyleSheet('color: #272727;')
+        self.lbl_rsa_pub.setStyleSheet('color: #272727;')
+        self.lbl_title.setStyleSheet('color: #272727;')
+
+        self.key_fernet.setStyleSheet('background-color: white;')
+        self.key_rsa_prv.setStyleSheet('background-color: white;')
+        self.key_rsa_pub.setStyleSheet('background-color: white;')
+        self.plain_text.setStyleSheet('background-color: white;')
+        self.plain_text2.setStyleSheet('background-color: white;')
+
         self.setLayout(layout)
 
     def get_fernet(self):
@@ -239,33 +262,33 @@ class Main(QWidget):
         cpr = cv2.imread('temp_img.png')
 
         errormse = core.imgError(pln, cpr)
-        errormse = 'MSE : ',  errormse
+        errormse = 'MSE',  core.percent_f(errormse)
 
         errorpsnr = cv2.PSNR(pln, cpr)
-        errorpsnr = 'PSNR : ', errorpsnr
+        errorpsnr = 'PSNR', core.percent_f(errorpsnr)
 
         return str(errormse), str(errorpsnr)
     
     def get_ava(self):
         errorava = core.txtError(self.plain_text.toPlainText(), self.f, self.publicKey)
-        errorava = 'AVA : ', errorava
+        errorava = 'AVA', core.percent_f(errorava)
         return str(errorava)
     
     def get_uaci(self):
         plain = cv2.imread(self.img_path, 0)
         cipher = cv2.imread('temp_img.png', 0)
 
-        erroruaci = core.uaci1(plain, cipher)
-        erroruaci = 'UACI : ', erroruaci
+        erroruaci = core.imgUaci(plain, cipher)
+        erroruaci = 'UACI', core.percent_f(erroruaci)
 
         return str(erroruaci)
     
     def get_npcr(self):
-        plain = cv2.imread(self.img_path, 0)
-        cipher = cv2.imread('temp_img.png', 0)
+        plain = cv2.imread(self.img_path, cv2.COLOR_BGR2GRAY)
+        cipher = cv2.imread('temp_img.png', cv2.COLOR_BGR2GRAY)
 
-        errornpcr = core.npcr1(plain, cipher)
-        errornpcr = 'NPCR : ', errornpcr
+        errornpcr = core.npcr(plain, cipher)
+        errornpcr = 'NPCR', core.percent_f(errornpcr)
 
         return str(errornpcr)
     
